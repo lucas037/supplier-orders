@@ -1,4 +1,4 @@
-package com.dunnas.lucas.supplier_orders_api.controller;
+package com.dunnas.lucas.supplier_orders_api.application.controller;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
 import com.dunnas.lucas.supplier_orders_api.application.service.ProductService;

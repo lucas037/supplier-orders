@@ -2,8 +2,8 @@ package com.dunnas.lucas.supplier_orders_api.application.service;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.ProductMapper;
-import com.dunnas.lucas.supplier_orders_api.domain.repository.ProductRepository;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.ProductEntity;
+import com.dunnas.lucas.supplier_orders_api.infra.repository.ProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

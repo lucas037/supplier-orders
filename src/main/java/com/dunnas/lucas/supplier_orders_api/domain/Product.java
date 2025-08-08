@@ -1,5 +1,4 @@
-package com.dunnas.lucas.supplier_orders_api.domain.model;
-
+package com.dunnas.lucas.supplier_orders_api.domain;
 
 public class Product {
     private final Long id;
