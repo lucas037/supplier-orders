@@ -17,13 +17,13 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(JpaSystemException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(JpaSystemException ex) {
-        String mensagemCompleta = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
+        String fullMessage = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
 
-        String mensagemLimpa = mensagemCompleta.split("\n")[0].replace("ERRO: ", "").trim();
+        String cleanMessage = fullMessage.split("\n")[0].replace("ERRO: ", "").trim();
 
         ErrorResponse errorResp = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
-            mensagemLimpa
+            cleanMessage
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResp);
