@@ -2,6 +2,7 @@ package com.dunnas.lucas.supplier_orders_api.application.service;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.ProductMapper;
+import com.dunnas.lucas.supplier_orders_api.controller.exception.ItemNotFoundException;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.ProductEntity;
 import com.dunnas.lucas.supplier_orders_api.infra.repository.ProductRepository;
 
@@ -24,7 +25,7 @@ public class ProductService {
 
     public ProductDTO getById(Long id) {
         ProductEntity entity = prodRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+            .orElseThrow(() -> new ItemNotFoundException("Produto não existe."));
 
         return ProductMapper.toDto(entity);
     }
@@ -37,14 +38,14 @@ public class ProductService {
 
     public void delete(Long id) {
         ProductEntity entity = prodRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+            .orElseThrow(() -> new ItemNotFoundException("Produto não existe."));
 
         prodRepo.delete(entity);
     }
 
     public ProductDTO update(ProductDTO product, Long id) {
         ProductEntity entity = prodRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+            .orElseThrow(() -> new ItemNotFoundException("Produto não existe."));
 
         entity.setName(product.name());
         entity.setDescription(product.description());
