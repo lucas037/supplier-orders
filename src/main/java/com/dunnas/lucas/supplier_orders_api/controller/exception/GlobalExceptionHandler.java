@@ -16,6 +16,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResp);
     }
 
+    @ExceptionHandler(NotAuthenticatedUser.class)
+    public ResponseEntity<ErrorResponse> handleNotAuthenticatedUser(NotAuthenticatedUser ex) {
+        ErrorResponse errorResp = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getErrorMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResp);
+    }
+
     @ExceptionHandler(JpaSystemException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(JpaSystemException ex) {
         String fullMessage = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();

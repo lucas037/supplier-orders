@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.dunnas.lucas.supplier_orders_api.controller.exception.NotAuthenticatedUser;
 import com.dunnas.lucas.supplier_orders_api.infra.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
@@ -23,6 +24,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
     UserRepository userRepository;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
