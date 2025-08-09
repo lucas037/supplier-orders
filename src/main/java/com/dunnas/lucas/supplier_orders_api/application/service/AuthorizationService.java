@@ -1,4 +1,4 @@
-package com.dunnas.lucas.supplier_orders_api.security;
+package com.dunnas.lucas.supplier_orders_api.application.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,14 +9,18 @@ import org.springframework.stereotype.Service;
 import com.dunnas.lucas.supplier_orders_api.infra.repository.UserRepository;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class AuthorizationService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepo;
+    UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
+        UserDetails user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        return user;
+
     }
+    
 }
