@@ -21,4 +21,10 @@ public class OrderController {
         OrderDTO createdOrder =orderServ.create(orderCreateDTO);
         return ResponseEntity.ok().body(createdOrder);
     }
+
+    @RequestMapping("/update")
+    public ResponseEntity<OrderDTO> update(@RequestBody OrderDTO orderDTO) {
+        OrderDTO savedOrder = orderServ.update(orderDTO);
+        return ResponseEntity.ok().body(savedOrder);
+    }
 }

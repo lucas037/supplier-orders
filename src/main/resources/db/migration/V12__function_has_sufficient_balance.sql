@@ -4,7 +4,7 @@ DECLARE
     saldo NUMERIC;
 BEGIN
     SELECT balance INTO saldo
-    FROM users
+    FROM clients
     WHERE id = user_id;
 
     RETURN saldo >= amount;

@@ -5,6 +5,8 @@ import java.util.UUID;
 import com.dunnas.lucas.supplier_orders_api.domain.enums.OrderStatus;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +30,8 @@ public class OrderEntity {
     UUID userId;
     Long productId;
     int quant;
+    
+    @Enumerated(EnumType.STRING)
     OrderStatus status;
 
     public OrderEntity(Long productId, int quant) {
