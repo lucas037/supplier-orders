@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.dunnas.lucas.supplier_orders_api.application.dto.LoginDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.RegisterDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.TokenResponseDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.UserDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.RegisterMapper;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.UserMapper;
 import com.dunnas.lucas.supplier_orders_api.domain.model.User;
@@ -33,7 +34,7 @@ public class AuthService {
    @Autowired
    private TokenService tokenService;
    
-   public void register(RegisterDTO registerDTO) {
+   public UserDTO register(RegisterDTO registerDTO) {
         if (userRepo.findByUsername(registerDTO.username()).isPresent())
             throw new IllegalStateException("Nome de usuário já está em uso.");
             
@@ -43,6 +44,8 @@ public class AuthService {
         userEntity.setPassword(encodedPassword);
 
         userRepo.save(userEntity);
+
+        return UserMapper.toDto(userEntity);
    }
 
 

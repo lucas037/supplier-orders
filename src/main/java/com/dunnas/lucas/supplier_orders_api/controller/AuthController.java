@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dunnas.lucas.supplier_orders_api.application.dto.LoginDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.RegisterDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.TokenResponseDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.UserDTO;
 import com.dunnas.lucas.supplier_orders_api.domain.service.AuthService;
 
 @RestController
@@ -18,9 +19,9 @@ public class AuthController {
     AuthService authServ;
 
     @RequestMapping("/register")
-    public ResponseEntity register(@RequestBody RegisterDTO registerDTO) {
-        authServ.register(registerDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserDTO> register(@RequestBody RegisterDTO registerDTO) {
+        UserDTO respDTO = authServ.register(registerDTO);
+        return ResponseEntity.ok().body(respDTO);
     }
 
     @RequestMapping("/login")
