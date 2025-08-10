@@ -37,6 +37,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
                     .requestMatchers("/api/v1/client/register", "/api/v1/supplier/register").permitAll()
                     .requestMatchers("/api/v1/product/**").hasRole("SUPPLIER")
+                    .requestMatchers("/api/v1/order/create").hasRole("CLIENT")
                     .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

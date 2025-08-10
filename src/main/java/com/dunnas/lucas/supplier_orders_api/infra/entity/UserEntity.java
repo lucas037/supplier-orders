@@ -1,7 +1,6 @@
 package com.dunnas.lucas.supplier_orders_api.infra.entity;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
