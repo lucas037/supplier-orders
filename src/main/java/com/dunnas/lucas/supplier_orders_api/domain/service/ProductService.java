@@ -1,12 +1,16 @@
 package com.dunnas.lucas.supplier_orders_api.domain.service;
 
+import com.dunnas.lucas.supplier_orders_api.application.dto.ProductCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.ProductMapper;
 import com.dunnas.lucas.supplier_orders_api.controller.exception.ItemNotFoundException;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.ProductEntity;
+import com.dunnas.lucas.supplier_orders_api.infra.entity.UserEntity;
 import com.dunnas.lucas.supplier_orders_api.infra.repository.ProductRepository;
+import com.dunnas.lucas.supplier_orders_api.infra.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +19,8 @@ import java.util.List;
 public class ProductService {
     @Autowired
     ProductRepository prodRepo;
+    @Autowired
+    UserRepository userRepo;
     
     public List<ProductDTO> getAll() {
         return prodRepo.findAll()
@@ -30,8 +36,15 @@ public class ProductService {
         return ProductMapper.toDto(entity);
     }
 
-    public ProductDTO create(ProductDTO product) {
+    public ProductDTO create(ProductCreateDTO product) {
         ProductEntity prodEntity = ProductMapper.toEntity(product);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        prodEntity.setSupplierId(user.getId());
+
         ProductEntity prodSaved = prodRepo.save(prodEntity);
         return ProductMapper.toDto(prodSaved);
     }

@@ -1,5 +1,6 @@
 package com.dunnas.lucas.supplier_orders_api.controller;
 
+import com.dunnas.lucas.supplier_orders_api.application.dto.ProductCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
 import com.dunnas.lucas.supplier_orders_api.domain.service.ProductService;
 
@@ -36,7 +37,7 @@ public class ProductController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO product) {
+    public ResponseEntity<ProductDTO> create(@RequestBody ProductCreateDTO product) {
         ProductDTO prodSaved = prodServ.create(product);
         return ResponseEntity.ok().body(prodSaved);
     }

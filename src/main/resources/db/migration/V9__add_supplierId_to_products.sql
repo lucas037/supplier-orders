@@ -1,0 +1,2 @@
+ALTER TABLE products
+ADD COLUMN supplier_id UUID NOT NULL;

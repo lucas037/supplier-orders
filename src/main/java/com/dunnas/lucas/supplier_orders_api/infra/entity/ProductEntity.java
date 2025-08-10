@@ -1,6 +1,7 @@
 package com.dunnas.lucas.supplier_orders_api.infra.entity;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +23,7 @@ public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private UUID supplierId;
     private String name;
     private String description;
     private BigDecimal price;
