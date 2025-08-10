@@ -1,6 +1,5 @@
 package com.dunnas.lucas.supplier_orders_api.controller.exception;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
