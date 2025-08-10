@@ -1,6 +1,6 @@
 package com.dunnas.lucas.supplier_orders_api.application.mapper;
 
-import com.dunnas.lucas.supplier_orders_api.application.model.User;
+import com.dunnas.lucas.supplier_orders_api.domain.model.User;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.UserEntity;
 
 public class UserMapper {

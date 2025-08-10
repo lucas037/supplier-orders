@@ -1,7 +1,8 @@
 package com.dunnas.lucas.supplier_orders_api.controller;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
-import com.dunnas.lucas.supplier_orders_api.application.service.ProductService;
+import com.dunnas.lucas.supplier_orders_api.domain.service.ProductService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

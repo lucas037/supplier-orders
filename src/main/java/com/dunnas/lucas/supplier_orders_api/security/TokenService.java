@@ -11,7 +11,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.dunnas.lucas.supplier_orders_api.application.model.User;
+import com.dunnas.lucas.supplier_orders_api.domain.model.User;
 
 @Service
 public class TokenService {

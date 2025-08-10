@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.ClientDTO;
-import com.dunnas.lucas.supplier_orders_api.application.service.ClientService;
+import com.dunnas.lucas.supplier_orders_api.domain.service.ClientService;
 
 @RestController
 @RequestMapping("/api/v1")
