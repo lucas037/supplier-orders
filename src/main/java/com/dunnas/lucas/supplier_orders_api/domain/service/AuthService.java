@@ -1,4 +1,4 @@
-package com.dunnas.lucas.supplier_orders_api.application.service;
+package com.dunnas.lucas.supplier_orders_api.domain.service;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +14,7 @@ import com.dunnas.lucas.supplier_orders_api.application.dto.RegisterDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.TokenResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.RegisterMapper;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.UserMapper;
-import com.dunnas.lucas.supplier_orders_api.application.model.User;
+import com.dunnas.lucas.supplier_orders_api.domain.model.User;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.UserEntity;
 import com.dunnas.lucas.supplier_orders_api.infra.repository.UserRepository;
 import com.dunnas.lucas.supplier_orders_api.security.TokenService;

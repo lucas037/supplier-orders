@@ -1,4 +1,4 @@
-package com.dunnas.lucas.supplier_orders_api.application.service;
+package com.dunnas.lucas.supplier_orders_api.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

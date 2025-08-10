@@ -1,4 +1,4 @@
-package com.dunnas.lucas.supplier_orders_api.application.model;
+package com.dunnas.lucas.supplier_orders_api.domain.model;
 
 import java.util.UUID;
 
