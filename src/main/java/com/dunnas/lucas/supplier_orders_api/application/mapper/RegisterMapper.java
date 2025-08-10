@@ -9,7 +9,8 @@ public class RegisterMapper {
         return new RegisterDTO(
             entity.getName(),
             entity.getUsername(),
-            entity.getPassword()
+            entity.getPassword(),
+            entity.getRole()
         );
     }
 
@@ -17,7 +18,8 @@ public class RegisterMapper {
         return new UserEntity(
             dto.name(),
             dto.username(),
-            dto.password()
+            dto.password(),
+            dto.role()
         );
     }
 }

@@ -9,7 +9,8 @@ public class UserMapper {
             user.getId(),
             user.getName(),
             user.getUsername(),
-            user.getPassword()
+            user.getPassword(),
+            user.getRole()
         );
     }
 
@@ -18,7 +19,8 @@ public class UserMapper {
             entity.getId(),
             entity.getName(),
             entity.getUsername(),
-            entity.getPassword()
+            entity.getPassword(),
+            entity.getRole()
         );
     }
 }
