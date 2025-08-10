@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderDTO;
-import com.dunnas.lucas.supplier_orders_api.application.dto.OrderUpdateStatusDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.OrderMapper;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.OrderEntity;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.UserEntity;
