@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.LoginDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.RegisterDTO;
-import com.dunnas.lucas.supplier_orders_api.application.dto.TokenResponseDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.LoginResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.UserDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.RegisterMapper;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.UserMapper;
@@ -49,7 +49,7 @@ public class AuthService {
    }
 
 
-   public TokenResponseDTO login(LoginDTO loginDTO) {
+   public LoginResponseDTO login(LoginDTO loginDTO) {
       UsernamePasswordAuthenticationToken authRequest =
          new UsernamePasswordAuthenticationToken(loginDTO.username(), loginDTO.password());
 
@@ -59,7 +59,7 @@ public class AuthService {
 
       User user = UserMapper.toUser(userEntity);
 
-      return new TokenResponseDTO(tokenService.generateToken(user));
+      return new LoginResponseDTO(tokenService.generateToken(user), userEntity.getRole());
    }
 
 }

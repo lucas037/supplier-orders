@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.LoginDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.RegisterDTO;
-import com.dunnas.lucas.supplier_orders_api.application.dto.TokenResponseDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.LoginResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.UserDTO;
 import com.dunnas.lucas.supplier_orders_api.domain.service.AuthService;
 
@@ -25,8 +25,8 @@ public class AuthController {
     }
 
     @RequestMapping("/login")
-    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginDTO loginDTO) {
-        TokenResponseDTO tokenResponse = authServ.login(loginDTO);
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
+        LoginResponseDTO tokenResponse = authServ.login(loginDTO);
         return ResponseEntity.ok().body(tokenResponse);
     }
 }
