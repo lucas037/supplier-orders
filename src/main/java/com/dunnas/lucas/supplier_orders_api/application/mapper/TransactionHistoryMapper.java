@@ -13,12 +13,15 @@ public class TransactionHistoryMapper {
         );
     }
 
-    public static TransactionHistoryDTO toDto(TransactionHistoryEntity entity) {
+    public static TransactionHistoryDTO toDto(TransactionHistoryEntity entity, String clientName, String supplierName, String productName) {
         return new TransactionHistoryDTO(
             entity.getId(),
             entity.getOrderId(),
             entity.getTransationType(),
-            entity.getTransationDate()
+            entity.getTransationDate(),
+            clientName,
+            supplierName,
+            productName
         );
     }
 }

@@ -1,5 +1,7 @@
 package com.dunnas.lucas.supplier_orders_api.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,5 +22,11 @@ public class TransactionHistoryController {
     public ResponseEntity<TransactionHistoryDTO> get(@PathVariable Long id) {
         TransactionHistoryDTO dto = transationServ.get(id);
         return ResponseEntity.ok().body(dto);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<TransactionHistoryDTO>> getAll() {
+        List<TransactionHistoryDTO> dtos = transationServ.getAll();
+        return ResponseEntity.ok().body(dtos);
     }
 }
