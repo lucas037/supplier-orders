@@ -37,7 +37,7 @@
             margin-bottom: 1rem;
         }
 
-        .btn { display: inline-block; padding: 8px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; }
+        .btn { display: inline-block; padding: 10px 20px; color: white; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; font-size: 14px; }
         .logout { background-color: crimson; }
         .logout:hover { background-color: darkred; }
         .products-btn { background-color: #3498db; }
@@ -152,26 +152,26 @@
         <div id="orders-content">
              <p id="loading-message" class="status-message">Carregando seus pedidos...</p>
              <table id="orders-table" style="display: none;">
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th>Preço</th>
-                        <th>Preço (Desc.)</th>
-                        <th>Quant.</th>
-                        <th>Preço Final</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-body">
-                </tbody>
-            </table>
+                 <thead>
+                     <tr>
+                         <th>Produto</th>
+                         <th>Preço</th>
+                         <th>Preço (Desc.)</th>
+                         <th>Quant.</th>
+                         <th>Preço Final</th>
+                         <th>Ações</th>
+                     </tr>
+                 </thead>
+                 <tbody id="orders-body">
+                 </tbody>
+             </table>
         </div>
     </div>
 
     <div id="confirmation-modal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <p id="modal-text"></p>
+            <div id="modal-text"></div>
         </div>
     </div>
 
@@ -315,13 +315,49 @@
                     fetchOrders();
                     
                 } catch (error) {
-                    alert(`Erro: ${error.message}`);
+                    showModal(`Erro ao atualizar o pedido: ${error.message}`);
                     console.error('Erro ao atualizar status:', error);
+                }
+            };
+
+            const processPayment = async (orderId) => {
+                modalText.innerHTML = '<h3>Processando Pagamento...</h3><p>Aguarde um instante, por favor.</p>';
+
+                try {
+                    const response = await fetch(`/api/v1/order/update`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                        body: JSON.stringify({ id: orderId, status: 'PAGO' })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Não foi possível processar o pagamento.');
+                    }
+
+                    modalText.innerHTML =
+                        '<h3>Pagamento Confirmado! ✅</h3>' +
+                        '<p>Sua compra foi realizada com sucesso.</p>' +
+                        '<div style="margin-top: 20px;">' +
+                        '<button id="closeSuccessModal" class="btn" style="background-color: #28a745;">Ótimo!</button>' +
+                        '</div>';
+                    document.getElementById('closeSuccessModal').addEventListener('click', hideModal);
+
+
+                } catch (error) {
+                    modalText.innerHTML =
+                        '<h3>Ocorreu um Erro 😟</h3>' +
+                        `<p style="margin: 15px 0;">${error.message}</p>` +
+                        '<div style="margin-top: 20px;">' +
+                        '<button id="closeErrorModal" class="btn" style="background-color: #dc3545;">Fechar</button>' +
+                        '</div>';
+                    document.getElementById('closeErrorModal').addEventListener('click', hideModal);
+                    console.error('Erro ao processar pagamento:', error);
                 }
             };
             
             const showModal = (message) => {
-                modalText.textContent = message;
+                modalText.innerHTML = `<p>${message}</p>`;
                 modal.classList.add('active');
             };
 
@@ -329,36 +365,53 @@
                 try {
                     const currentBalance = await getClientBalance();
                     const totalPrice = orderPrice * orderQuant;
-                    const finalBalance = currentBalance - totalPrice;
 
-                    const modalContent = 
-                        '<h3>Confirmação de Pagamento</h3>' +
-                        '<div style="text-align: left; margin: 20px 0;">' +
-                            '<p><strong>Saldo Atual:</strong> ' + formatCurrency(currentBalance) + '</p>' +
-                            '<p><strong>Preço Unitário:</strong> ' + formatCurrency(orderPrice) + '</p>' +
-                            '<p><strong>Quantidade:</strong> ' + orderQuant + '</p>' +
-                            '<p><strong>Total a Pagar:</strong> ' + formatCurrency(totalPrice) + '</p>' +
-                            '<p><strong>Saldo Final:</strong> ' + formatCurrency(finalBalance) + '</p>' +
-                        '</div>' +
-                        '<div style="margin-top: 20px;">' +
-                            '<button id="confirmPayment" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 10px; cursor: pointer;">Confirmar Pagamento</button>' +
-                            '<button id="cancelPayment" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Cancelar</button>' +
-                        '</div>';
+                    if (totalPrice > currentBalance) {
+                        const modalContent =
+                            '<h3>Saldo Insuficiente 😟</h3>' +
+                            '<div style="text-align: left; margin: 20px 0;">' +
+                            '<p><strong>Seu Saldo Atual:</strong> ' + formatCurrency(currentBalance) + '</p>' +
+                            '<p><strong>Total da Compra:</strong> ' + formatCurrency(totalPrice) + '</p>' +
+                            '<p style="color: #dc3545; font-weight: bold; margin-top: 15px;">Você não tem saldo suficiente para concluir esta transação.</p>' +
+                            '</div>' +
+                            '<p>Por favor, <a href="/deposit">faça um depósito</a> e tente novamente.</p>' +
+                            '<div style="margin-top: 20px;">' +
+                            '<button id="closeInsufficientFunds" class="btn" style="background-color: #6c757d;">Fechar</button>' +
+                            '</div>';
 
-                    modalText.innerHTML = modalContent;
-                    modal.classList.add('active');
+                        modalText.innerHTML = modalContent;
+                        modal.classList.add('active');
+                        document.getElementById('closeInsufficientFunds').addEventListener('click', hideModal);
 
-                    document.getElementById('confirmPayment').addEventListener('click', () => {
-                        hideModal();
-                        updateOrderStatus(parseInt(orderId), 'PAGO');
-                    });
+                    } else {
+                        const finalBalance = currentBalance - totalPrice;
+                        const modalContent =
+                            '<h3>Confirmação de Pagamento</h3>' +
+                            '<div style="text-align: left; margin: 20px 0;">' +
+                                '<p><strong>Saldo Atual:</strong> ' + formatCurrency(currentBalance) + '</p>' +
+                                '<p><strong>Preço Unitário:</strong> ' + formatCurrency(orderPrice) + '</p>' +
+                                '<p><strong>Quantidade:</strong> ' + orderQuant + '</p>' +
+                                '<p><strong>Total a Pagar:</strong> ' + formatCurrency(totalPrice) + '</p>' +
+                                '<p><strong>Saldo Final:</strong> ' + formatCurrency(finalBalance) + '</p>' +
+                            '</div>' +
+                            '<div style="margin-top: 20px;">' +
+                                '<button id="confirmPayment" class="btn" style="background-color: #28a745; margin-right: 10px;">Confirmar Pagamento</button>' +
+                                '<button id="cancelPayment" class="btn" style="background-color: #dc3545;">Cancelar</button>' +
+                            '</div>';
 
-                    document.getElementById('cancelPayment').addEventListener('click', () => {
-                        hideModal();
-                    });
+                        modalText.innerHTML = modalContent;
+                        modal.classList.add('active');
 
+                        document.getElementById('confirmPayment').addEventListener('click', () => {
+                            processPayment(parseInt(orderId));
+                        });
+
+                        document.getElementById('cancelPayment').addEventListener('click', () => {
+                            hideModal();
+                        });
+                    }
                 } catch (error) {
-                    alert('Erro ao obter informações de saldo: ' + error.message);
+                    showModal('Erro ao obter informações de saldo: ' + error.message);
                 }
             };
             
@@ -378,12 +431,12 @@
                         const discountPrice = (1-order.discount)*order.price;
                         showPaymentModal(orderId, discountPrice, order.quant);
                     } else {
-                        alert('Erro: Não foi possível encontrar os dados do pedido.');
+                        showModal('Erro: Não foi possível encontrar os dados do pedido.');
                     }
                 } else if (target.classList.contains('btn-cancel')) {
                      if (confirm(`Tem certeza que deseja cancelar o pedido ${orderId}?`)) {
-                        updateOrderStatus(parseInt(orderId), 'CANCELADO');
-                    }
+                         updateOrderStatus(parseInt(orderId), 'CANCELADO');
+                     }
                 }
             });
 
