@@ -7,16 +7,29 @@
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #3a7bd5, #3a6073);
-            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 0;
         }
-
+        
         .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
             width: 90%;
-            max-width: 1200px;
-            margin: 2rem auto;
+            max-width: 900px;
+            text-align: center;
         }
 
-        h1 { text-align: center; }
+        h2 { 
+            text-align: center; 
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
         table { border-collapse: collapse; width: 100%; background: white; color: black; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         
         th, td { 
@@ -26,7 +39,7 @@
         }
         
         th { 
-            background-color: #4CAF50; 
+            background-color: #3a7bd5; 
             color: white; 
             text-align: left;
         }
@@ -76,6 +89,12 @@
             background-color: #28a745;
             cursor: not-allowed;
         }
+        
+        .status-message {
+            font-style: italic;
+            color: #555;
+            margin-top: 2rem;
+        }
 
     </style>
 </head>
@@ -83,11 +102,12 @@
     <div class="container">
         <div class="header-actions">
             <button class="btn logout" onclick="logout()">Sair</button>
-            <a href="/cart" class="btn cart-link-btn">🛒 Ver Carrinho</a>
+            <a href="/cart" class="btn cart-link-btn">Ver Carrinho</a>
         </div>
-        <h1>Catálogo de Produtos</h1>
-
-        <table id="productsTable">
+        <h2>Catálogo de Produtos</h2>
+        <div id="products-content">
+            <p id="loading-message" class="status-message">Carregando produtos...</p>
+            <table id="productsTable" style="display: none;">
             <thead>
                 <tr>
                     <th>Fornecedor</th>
@@ -99,6 +119,7 @@
             </thead>
             <tbody></tbody>
         </table>
+        </div>
     </div>
 
     <script>
@@ -120,26 +141,43 @@
             .then(data => {
                 const productsData = Array.isArray(data) ? data : (data.content || []);
                 const tbody = document.querySelector("#productsTable tbody");
+                const loadingMessage = document.getElementById('loading-message');
+                const table = document.getElementById('productsTable');
+                
                 tbody.innerHTML = "";
-                productsData.forEach(product => {
-                    const priceFormatted = `R$ ${Number(product.price || 0).toFixed(2)}`;
-                    tbody.innerHTML += `
-                        <tr id="row-${product.id}">
-                            <td>${product.supplierName || 'N/A'}</td>
-                            <td>${product.name}</td>
-                            <td>${product.description}</td>
-                            <td>${priceFormatted}</td>
-                            <td>
-                                <input class="quantity-input" type="number" id="quantity-${product.id}" value="1" min="1" step="1" />
-                                <button class="btn cart-btn" onclick="addToCart(event, ${product.id})">Adicionar</button>
-                            </td>
-                        </tr>
-                    `;
-                });
+                
+                if (productsData.length === 0) {
+                    loadingMessage.textContent = "Nenhum produto disponível.";
+                    table.style.display = 'none';
+                    loadingMessage.style.display = 'block';
+                } else {
+                    loadingMessage.style.display = 'none';
+                    table.style.display = 'table';
+                    
+                                        productsData.forEach(product => {
+                        const priceFormatted = `R$ ${Number(product.price || 0).toFixed(2)}`;
+                        tbody.innerHTML += `
+                            <tr id="row-${product.id}">
+                                <td>${product.supplierName || 'N/A'}</td>
+                                <td>${product.name}</td>
+                                <td>${product.description}</td>
+                                <td>${priceFormatted}</td>
+                                <td>
+                                    <input class="quantity-input" type="number" id="quantity-${product.id}" value="1" min="1" step="1" />
+                                    <button class="btn cart-btn" onclick="addToCart(event, ${product.id})">Adicionar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
             })
             .catch(err => {
                 console.error("Erro ao carregar produtos:", err);
-                alert("Não foi possível carregar os produtos.");
+                const loadingMessage = document.getElementById('loading-message');
+                const table = document.getElementById('productsTable');
+                loadingMessage.textContent = "Erro ao carregar produtos. Tente novamente mais tarde.";
+                table.style.display = 'none';
+                loadingMessage.style.display = 'block';
             });
         }
         

@@ -57,9 +57,9 @@
         }
 
         #orders-table th {
-            background-color: #f4f6f8;
+            background-color: #3a7bd5;
             font-weight: bold;
-            color: #333;
+            color: white;
         }
 
         #orders-table tr:last-child td {
