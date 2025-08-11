@@ -30,10 +30,15 @@ public class SecurityConfig {
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("aqui====");
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/welcome").permitAll()
+                    .requestMatchers("/WEB-INF/**").permitAll()
+                    .requestMatchers("/static/**").permitAll()
+                    .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                     .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
                     .requestMatchers("/api/v1/client/register", "/api/v1/supplier/register").permitAll()
                     .requestMatchers("/api/v1/product").hasRole("CLIENT")
