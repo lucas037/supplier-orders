@@ -3,6 +3,7 @@
 <head>
     <title>Histórico de Transações</title>
     <style>
+        /* Estilos gerais da página, baseados no exemplo fornecido */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #3a7bd5, #3a6073);
@@ -14,13 +15,14 @@
             padding: 2rem 0;
         }
         
+        /* Container principal */
         .container {
             background-color: white;
             padding: 2rem;
             border-radius: 12px;
             box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
             width: 90%;
-            max-width: 1000px;
+            max-width: 1000px; /* Aumentado para acomodar mais colunas */
             text-align: center;
         }
 
@@ -29,6 +31,7 @@
             color: #333;
         }
 
+        /* Ações do cabeçalho (botões de navegação) */
         .header-actions {
             display: flex;
             justify-content: flex-start;
@@ -38,6 +41,7 @@
             flex-wrap: wrap;
         }
 
+        /* Estilos gerais dos botões */
         .btn { 
             display: inline-block; 
             padding: 8px 12px; 
@@ -55,6 +59,7 @@
         .nav-btn { background-color: #3498db; }
         .nav-btn:hover { background-color: #2980b9; }
 
+        /* Tabela de transações */
         #transactions-table {
             width: 100%;
             border-collapse: collapse;
@@ -81,6 +86,7 @@
             background-color: #f1f1f1;
         }
 
+        /* Mensagem de status (carregando, vazio, erro) */
         .status-message {
             font-style: italic;
             color: #555;
@@ -88,6 +94,7 @@
             font-size: 1.1em;
         }
 
+        /* Estilos para o tipo de transação */
         .status-badge {
             padding: 5px 10px;
             border-radius: 15px;
@@ -106,6 +113,7 @@
 </head>
 <body>
     <div class="container">
+        <!-- Navegação -->
         <div class="header-actions">
             <button class="btn logout" onclick="logout()">Sair</button>
             <a href="/buy-products" class="btn nav-btn">Produtos</a>
@@ -123,7 +131,7 @@
                          <th>Data</th>
                          <th>Status</th>
                          <th>Produto</th>
-                         <th>Fornecedor</th>
+                         <th id="party-header">Fornecedor</th>
                          <th>ID Pedido</th>
                      </tr>
                  </thead>
@@ -136,6 +144,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem("token");
+            const role = localStorage.getItem("role");
 
             if (!token) {
                 alert("Você precisa estar logado para ver seu histórico.");
@@ -146,7 +155,24 @@
             const tableBody = document.getElementById('transactions-body');
             const loadingMessage = document.getElementById('loading-message');
             const table = document.getElementById('transactions-table');
+            const partyHeader = document.getElementById('party-header');
+            const headerActions = document.querySelector('.header-actions');
 
+            // Altera o cabeçalho da tabela e os botões de navegação com base na role do usuário
+            if (role === 'SUPPLIER') {
+                partyHeader.textContent = 'Cliente';
+                headerActions.innerHTML = `
+                    <button class="btn logout" onclick="logout()">Sair</button>
+                    <a href="/products" class="btn nav-btn">Produtos</a>
+                `;
+            } else {
+                partyHeader.textContent = 'Fornecedor';
+                // Para CLIENT, os botões padrão no HTML já estão corretos.
+            }
+
+            /**
+             * Formata uma string de data/hora (ISO) para o formato brasileiro.
+             */
             const formatDateTime = (isoString) => {
                 if (!isoString) return 'N/A';
                 const safeIsoString = isoString.replace(/(\.\d{3})\d+/, '$1');
@@ -161,6 +187,9 @@
                 return date.toLocaleString('pt-BR', options);
             };
 
+            /**
+             * Formata e estiliza o tipo de transação com os nomes customizados.
+             */
             const formatTransactionType = (type) => {
                 let className = 'status-default';
                 let text = 'Desconhecido';
@@ -187,6 +216,9 @@
                 return `<span class="status-badge ${className}">${text}</span>`;
             };
 
+            /**
+             * Busca as transações da API.
+             */
             const fetchTransactions = async () => {
                 try {
                     const response = await fetch(`/api/v1/transaction`, {
@@ -206,6 +238,9 @@
                 }
             };
 
+            /**
+             * Renderiza as transações na tabela.
+             */
             const renderTransactions = (transactions) => {
                 tableBody.innerHTML = '';
 
@@ -217,6 +252,7 @@
                     loadingMessage.style.display = 'none';
                     table.style.display = 'table';
 
+                    // Ordena as transações da mais recente para a mais antiga (ordem mantida)
                     transactions.sort((a, b) => {
                         const dateA = new Date(a.transationDate.replace(/(\.\d{3})\d+/, '$1'));
                         const dateB = new Date(b.transationDate.replace(/(\.\d{3})\d+/, '$1'));
@@ -225,12 +261,14 @@
 
                     transactions.forEach(tx => {
                         const row = document.createElement('tr');
+                        // Define qual nome exibir com base na role do usuário
+                        const partyName = role === 'SUPPLIER' ? tx.clientName : tx.supplierName;
                         
                         row.innerHTML = `
                             <td>${formatDateTime(tx.transationDate)}</td>
                             <td>${formatTransactionType(tx.transationType)}</td>
                             <td>${tx.productName || 'N/A'}</td>
-                            <td>${tx.supplierName || 'N/A'}</td>
+                            <td>${partyName || 'N/A'}</td>
                             <td>${tx.orderId || 'N/A'}</td>
                         `;
 
@@ -239,9 +277,11 @@
                 }
             };
 
+            // Inicia a busca pelas transações
             fetchTransactions();
         });
 
+        // Funções de navegação e logout
         function logout() {
             localStorage.clear();
             window.location.href = "/login";
