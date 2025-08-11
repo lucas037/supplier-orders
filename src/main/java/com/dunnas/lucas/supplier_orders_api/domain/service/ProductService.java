@@ -36,7 +36,8 @@ public class ProductService {
                     supplier.getName(),
                     p.getName(),
                     p.getDescription(),
-                    p.getPrice()
+                    p.getPrice(),
+                    p.getDiscount()
                 );
             })
             .toList();
@@ -85,6 +86,7 @@ public class ProductService {
         entity.setName(product.name());
         entity.setDescription(product.description());
         entity.setPrice(product.price());
+        entity.setDiscount(product.discount());
 
         prodRepo.save(entity);
 

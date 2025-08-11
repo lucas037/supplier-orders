@@ -96,6 +96,17 @@
             margin-top: 2rem;
         }
 
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-right: 8px;
+        }
+
+        .final-price {
+            font-weight: bold;
+            color: #28a745;
+        }
+
     </style>
 </head>
 <body>
@@ -132,6 +143,10 @@
             loadProducts();
         }
 
+        const formatCurrency = (value) => {
+            return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        };
+
         function loadProducts() {
             fetch("/api/v1/product", {
                 method: "GET",
@@ -154,14 +169,24 @@
                     loadingMessage.style.display = 'none';
                     table.style.display = 'table';
                     
-                                        productsData.forEach(product => {
-                        const priceFormatted = `R$ ${Number(product.price || 0).toFixed(2)}`;
+                    productsData.forEach(product => {
+                        let priceHtml;
+                        if (product.discount && product.discount > 0) {
+                            const finalPrice = product.price * (1 - product.discount);
+                            priceHtml = `
+                                <span class="original-price">${formatCurrency(product.price)}</span>
+                                <span class="final-price">${formatCurrency(finalPrice)}</span>
+                            `;
+                        } else {
+                            priceHtml = formatCurrency(product.price);
+                        }
+
                         tbody.innerHTML += `
                             <tr id="row-${product.id}">
                                 <td>${product.supplierName || 'N/A'}</td>
                                 <td>${product.name}</td>
                                 <td>${product.description}</td>
-                                <td>${priceFormatted}</td>
+                                <td>${priceHtml}</td>
                                 <td>
                                     <input class="quantity-input" type="number" id="quantity-${product.id}" value="1" min="1" step="1" />
                                     <button class="btn cart-btn" onclick="addToCart(event, ${product.id})">Adicionar</button>

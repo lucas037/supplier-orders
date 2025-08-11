@@ -1,5 +1,7 @@
 package com.dunnas.lucas.supplier_orders_api.application.mapper;
 
+import java.math.BigDecimal;
+
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.ProductEntity;
@@ -11,7 +13,8 @@ public class ProductMapper {
             entity.getSupplierId(),
             entity.getName(),
             entity.getDescription(),
-            entity.getPrice()    
+            entity.getPrice(),
+            entity.getDiscount() 
         );
     }
     
@@ -20,7 +23,8 @@ public class ProductMapper {
             entity.getId(),
             entity.getName(),
             entity.getDescription(),
-            entity.getPrice()    
+            entity.getPrice(),
+            entity.getDiscount()
         );
     }
 
@@ -30,7 +34,8 @@ public class ProductMapper {
             dto.supplierId(),
             dto.name(),
             dto.description(),
-            dto.price()
+            dto.price(),
+            dto.discount()
         );
     }
 
@@ -40,7 +45,8 @@ public class ProductMapper {
             null,
             dto.name(),
             dto.description(),
-            dto.price()
+            dto.price(),
+            dto.discount()
         );
     }
 }

@@ -19,26 +19,23 @@
         h1 { text-align: center; }
         table { border-collapse: collapse; width: 100%; background: white; color: black; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         
-        /* ALINHAMENTO DAS CÉLULAS */
         th, td { 
             padding: 12px 15px; 
             border-bottom: 1px solid #ddd; 
-            vertical-align: middle; /* Centraliza verticalmente */
+            vertical-align: middle;
         }
         
         th { 
             background-color: #4CAF50; 
             color: white; 
-            text-align: left; /* Cabeçalhos à esquerda por padrão */
+            text-align: left;
         }
 
-        /* Coluna Preço (terceira): alinhada à direita */
         #productsTable th:nth-child(3),
         #productsTable td:nth-child(3) {
             text-align: right;
         }
 
-        /* Coluna Ações (última): alinhada ao centro */
         #productsTable th:last-child,
         #productsTable td:last-child {
             text-align: center;
@@ -60,7 +57,7 @@
         
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
         .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border-radius: 8px; width: 80%; max-width: 400px; color: black; position: relative; }
-        .modal-content input { width: calc(100% - 16px); padding: 8px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;}
+        .modal-content input[type="text"], .modal-content input[type="number"] { width: calc(100% - 16px); padding: 8px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;}
         .modal-buttons { margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px; }
         .modal-buttons .btn { margin-bottom: 0; }
         .save-btn { background-color: green; }
@@ -83,6 +80,7 @@
                     <th>Nome</th>
                     <th>Descrição</th>
                     <th>Preço</th>
+                    <th>Desconto</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -97,6 +95,23 @@
             <input type="text" id="name" placeholder="Nome do Produto" required/>
             <input type="text" id="description" placeholder="Descrição" required/>
             <input type="number" id="price" placeholder="Preço" step="0.01" required/>
+            
+            <div style="margin-top: 15px; text-align: left;">
+                <label>Desconto:</label>
+                <div style="margin-top: 5px;">
+                    <input type="radio" id="discount0" name="discount" value="0.00">
+                    <label for="discount0" style="margin-right: 10px;">0%</label>
+                    <input type="radio" id="discount5" name="discount" value="0.05">
+                    <label for="discount5" style="margin-right: 10px;">5%</label>
+                    <input type="radio" id="discount10" name="discount" value="0.10">
+                    <label for="discount10" style="margin-right: 10px;">10%</label>
+                    <input type="radio" id="discount15" name="discount" value="0.15">
+                    <label for="discount15" style="margin-right: 10px;">15%</label>
+                    <input type="radio" id="discount25" name="discount" value="0.25">
+                    <label for="discount25">25%</label>
+                </div>
+            </div>
+
             <div class="modal-buttons">
                 <button class="btn close-btn" onclick="closeModal()">Cancelar</button>
                 <button id="saveBtn" class="btn save-btn" onclick="handleSave()">Salvar</button>
@@ -128,11 +143,13 @@
                 tbody.innerHTML = "";
                 productsData.forEach(product => {
                     const priceFormatted = `R$ ${Number(product.price || 0).toFixed(2)}`;
+                    const discountFormatted = `${(product.discount || 0) * 100}%`;
                     tbody.innerHTML += `
                         <tr id="row-${product.id}">
                             <td>${product.name}</td>
                             <td>${product.description}</td>
                             <td>${priceFormatted}</td>
+                            <td>${discountFormatted}</td>
                             <td>
                                 <button class="btn action-btn edit-btn" onclick="openEditModal(${product.id})">Editar</button>
                                 <button class="btn action-btn delete-btn" onclick="deleteProduct(${product.id})">Remover</button>
@@ -171,6 +188,7 @@
             document.getElementById("name").value = "";
             document.getElementById("description").value = "";
             document.getElementById("price").value = "";
+            document.getElementById("discount0").checked = true;
             modal.style.display = "block";
         }
         
@@ -183,6 +201,15 @@
             document.getElementById("name").value = product.name;
             document.getElementById("description").value = product.description;
             document.getElementById("price").value = product.price;
+            
+            const discountValue = product.discount || 0.00;
+            const radioToCheck = document.querySelector(`input[name="discount"][value="${discountValue.toFixed(2)}"]`);
+            if (radioToCheck) {
+                radioToCheck.checked = true;
+            } else {
+                document.getElementById("discount0").checked = true; // Fallback
+            }
+
             modal.style.display = "block";
         }
         
@@ -195,13 +222,14 @@
             const name = document.getElementById("name").value.trim();
             const description = document.getElementById("description").value.trim();
             const price = parseFloat(document.getElementById("price").value);
+            const discount = parseFloat(document.querySelector('input[name="discount"]:checked').value);
 
             if (!name || !description || isNaN(price) || price < 0) {
                 alert("Por favor, preencha todos os campos corretamente.");
                 return;
             }
 
-            const productData = { name, description, price };
+            const productData = { name, description, price, discount };
             const isUpdate = !!id;
             const url = isUpdate ? `/api/v1/product/update/${id}` : "/api/v1/product/create";
             const method = isUpdate ? "PUT" : "POST";
@@ -220,8 +248,8 @@
                 loadProducts();
             })
             .catch(err => {
-                 console.error("Erro ao salvar produto:", err);
-                 alert(`Não foi possível salvar o produto.`);
+               console.error("Erro ao salvar produto:", err);
+               alert(`Não foi possível salvar o produto.`);
             });
         }
 
