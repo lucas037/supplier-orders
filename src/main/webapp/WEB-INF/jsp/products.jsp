@@ -117,7 +117,7 @@
         }
 
         function loadProducts() {
-            fetch("/api/v1/product", {
+            fetch("/api/v1/product/supplier", {
                 method: "GET",
                 headers: { "Authorization": "Bearer " + token }
             })
