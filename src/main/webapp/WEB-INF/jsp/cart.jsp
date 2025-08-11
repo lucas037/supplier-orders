@@ -29,6 +29,20 @@
             color: #333;
         }
 
+        .header-actions {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .btn { display: inline-block; padding: 8px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; }
+        .logout { background-color: crimson; }
+        .logout:hover { background-color: darkred; }
+        .products-btn { background-color: #ff9800; }
+        .products-btn:hover { background-color: #f57c00; }
+
         #orders-table {
             width: 100%;
             border-collapse: collapse;
@@ -128,6 +142,10 @@
 </head>
 <body>
     <div class="cart-container">
+        <div class="header-actions">
+            <button class="btn logout" onclick="logout()">Sair</button>
+            <a href="/buy-products" class="btn products-btn">Produtos</a>
+        </div>
         <h2>Meu Carrinho de Pedidos</h2>
         <div id="orders-content">
              <p id="loading-message" class="status-message">Carregando seus pedidos...</p>
@@ -372,6 +390,11 @@
 
             fetchOrders();
         });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "/login";
+        }
     </script>
 </body>
 </html>
