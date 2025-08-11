@@ -42,7 +42,7 @@ public class OrderMapper {
         );
     }
 
-    public static OrderResponseDTO toDto(OrderEntity orderEntity, String productName, BigDecimal totalPrice) {
+    public static OrderResponseDTO toDto(OrderEntity orderEntity, String productName, BigDecimal price, BigDecimal discount) {
         return new OrderResponseDTO(
             orderEntity.getId(),
             orderEntity.getUserId(),
@@ -50,7 +50,8 @@ public class OrderMapper {
             orderEntity.getQuant(),
             orderEntity.getStatus(),
             productName,
-            totalPrice
+            price,
+            discount
         );
     }
 

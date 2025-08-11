@@ -40,7 +40,7 @@ public class OrderService {
                 .filter(o -> OrderStatus.AGUARDANDO_PAGAMENTO.equals(o.getStatus()))
                 .map(o -> {
                     ProductEntity product = productServ.getProduct(o.getProductId());
-                    return OrderMapper.toDto(o, product.getName(), product.getPrice());
+                    return OrderMapper.toDto(o, product.getName(), product.getPrice(), product.getDiscount());
                 })
                 .toList();
 

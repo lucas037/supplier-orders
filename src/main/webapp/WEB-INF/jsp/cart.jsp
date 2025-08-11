@@ -154,8 +154,9 @@
                     <tr>
                         <th>Produto</th>
                         <th>Preço</th>
+                        <th>Preço com Desconto</th>
                         <th>Quantidade</th>
-                        <th>Preço Total</th>
+                        <th>Preço Final</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -175,7 +176,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem("token");
-            let orders = []; // Variável global para armazenar as orders
+            let orders = [];
 
             if (!token) {
                 alert("Você precisa estar logado para ver seus pedidos.");
@@ -204,7 +205,7 @@
                         throw new Error("Falha ao buscar os pedidos.");
                     }
 
-                    orders = await response.json(); // Armazena na variável global
+                    orders = await response.json();
                     renderOrders(orders);
 
                 } catch (error) {
@@ -235,12 +236,16 @@
                         cellPrice.textContent = formatCurrency(order.price);
                         row.appendChild(cellPrice);
 
+                        const cellDiscountPrice = document.createElement('td');
+                        cellDiscountPrice.textContent = formatCurrency((1-order.discount)*order.price);
+                        row.appendChild(cellDiscountPrice);
+
                         const cellQuant = document.createElement('td');
                         cellQuant.textContent = order.quant;
                         row.appendChild(cellQuant);
 
                         const cellTotalPrice = document.createElement('td');
-                        cellTotalPrice.textContent = formatCurrency(order.price*order.quant);
+                        cellTotalPrice.textContent = formatCurrency((1-order.discount)*order.price*order.quant);
                         row.appendChild(cellTotalPrice);
 
                         const cellActions = document.createElement('td');
@@ -341,7 +346,6 @@
                     modalText.innerHTML = modalContent;
                     modal.classList.add('active');
 
-                    // Adicionar event listeners para os botões
                     document.getElementById('confirmPayment').addEventListener('click', () => {
                         hideModal();
                         updateOrderStatus(parseInt(orderId), 'PAGO');
@@ -367,10 +371,10 @@
                 if (!orderId) return;
 
                 if (target.classList.contains('btn-pay')) {
-                    // Encontrar a ordem correspondente para obter preço e quantidade
                     const order = orders.find(o => o.id == orderId);
                     if (order) {
-                        showPaymentModal(orderId, order.price, order.quant);
+                        const discountPrice = (1-order.discount)*order.price;
+                        showPaymentModal(orderId, discountPrice, order.quant);
                     } else {
                         alert('Erro: Não foi possível encontrar os dados do pedido.');
                     }
