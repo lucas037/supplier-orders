@@ -34,14 +34,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/login").permitAll()
-                    .requestMatchers("/register").permitAll()
+                    .requestMatchers("/login", "/register", "/products").permitAll()
                     .requestMatchers("/WEB-INF/**").permitAll()
                     .requestMatchers("/static/**").permitAll()
                     .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                     .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
                     .requestMatchers("/api/v1/client/register", "/api/v1/supplier/register").permitAll()
-                    .requestMatchers("/api/v1/product").hasRole("CLIENT")
+
+                    .requestMatchers("/api/v1/product").hasAnyRole("CLIENT", "SUPPLIER")
                     .requestMatchers("/api/v1/product/**").hasRole("SUPPLIER")
                     .requestMatchers("/api/v1/order/**").hasRole("CLIENT")
                     .anyRequest().authenticated()
