@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.OrderResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.domain.service.OrderService;
 
 @RestController
@@ -20,10 +21,9 @@ public class OrderController {
     OrderService orderServ;
 
     @RequestMapping()
-    public ResponseEntity<List<OrderDTO>> getAll() {
-        System.out.println("Iniciando pesquisa...");
+    public ResponseEntity<List<OrderResponseDTO>> getAll() {
         try {
-            List<OrderDTO> dtos = orderServ.getAll();
+            List<OrderResponseDTO> dtos = orderServ.getAll();
             return ResponseEntity.ok().body(dtos);
         } catch (Exception e) {
             System.err.println("OrderController.getAll() - Erro: " + e.getMessage());

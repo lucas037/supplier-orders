@@ -1,7 +1,10 @@
 package com.dunnas.lucas.supplier_orders_api.application.mapper;
 
+import java.math.BigDecimal;
+
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.OrderResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.OrderEntity;
 
 public class OrderMapper {
@@ -36,6 +39,18 @@ public class OrderMapper {
         return new OrderCreateDTO(
             orderEntity.getProductId(),
             orderEntity.getQuant()
+        );
+    }
+
+    public static OrderResponseDTO toDto(OrderEntity orderEntity, String productName, BigDecimal totalPrice) {
+        return new OrderResponseDTO(
+            orderEntity.getId(),
+            orderEntity.getUserId(),
+            orderEntity.getProductId(),
+            orderEntity.getQuant(),
+            orderEntity.getStatus(),
+            productName,
+            totalPrice
         );
     }
 

@@ -99,4 +99,11 @@ public class ProductService {
         return user.getId();
     }
 
+    public ProductEntity getProduct(Long id) {
+        ProductEntity entity = prodRepo.findById(id)
+            .orElseThrow(() -> new ItemNotFoundException("Produto não existe."));
+
+        return entity;
+    }
+
 }

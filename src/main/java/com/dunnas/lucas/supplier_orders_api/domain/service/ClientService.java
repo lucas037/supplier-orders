@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.dunnas.lucas.supplier_orders_api.application.dto.BalanceResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.ClientDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.DepositDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.ClientMapper;
@@ -52,4 +53,17 @@ public class ClientService {
         
         return ClientMapper.toDTO(clientSaved);
     }
+
+    public BalanceResponseDTO getBalance() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        UUID userId = user.getId();
+        ClientEntity client = clientRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        return new BalanceResponseDTO(client.getBalance());
+    }
+
 }

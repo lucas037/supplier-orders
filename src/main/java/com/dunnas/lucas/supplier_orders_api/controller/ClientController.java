@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dunnas.lucas.supplier_orders_api.application.dto.BalanceResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.ClientDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.DepositDTO;
 import com.dunnas.lucas.supplier_orders_api.domain.service.ClientService;
@@ -26,5 +27,11 @@ public class ClientController {
     public ResponseEntity<ClientDTO> deposit(@RequestBody DepositDTO depositDTO) {
         ClientDTO respDTo = clientServ.deposit(depositDTO);
         return ResponseEntity.ok().body(respDTo);
+    }
+    
+    @RequestMapping("/client/balance")
+    public ResponseEntity<BalanceResponseDTO> getBalance() {
+        BalanceResponseDTO respDto = clientServ.getBalance();
+        return ResponseEntity.ok().body(respDto);
     }
 }

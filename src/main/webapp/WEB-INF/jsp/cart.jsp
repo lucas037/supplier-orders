@@ -3,26 +3,24 @@
 <head>
     <title>Meu Carrinho</title>
     <style>
-        /* Estilos base (iguais aos das outras telas) */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #3a7bd5, #3a6073);
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Alinhado ao topo para carrinhos grandes */
+            align-items: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 2rem 0; /* Espaçamento vertical */
+            padding: 2rem 0;
         }
         
-        /* Container principal para o carrinho */
         .cart-container {
             background-color: white;
             padding: 2rem;
             border-radius: 12px;
             box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
             width: 90%;
-            max-width: 900px; /* Largura máxima para a tabela */
+            max-width: 900px;
             text-align: center;
         }
 
@@ -31,7 +29,6 @@
             color: #333;
         }
 
-        /* Estilos da tabela de pedidos */
         #orders-table {
             width: 100%;
             border-collapse: collapse;
@@ -42,6 +39,7 @@
             padding: 12px 15px;
             border-bottom: 1px solid #ddd;
             text-align: left;
+            vertical-align: middle;
         }
 
         #orders-table th {
@@ -54,7 +52,6 @@
             border-bottom: none;
         }
 
-        /* Botões de ação dentro da tabela */
         .action-button {
             padding: 6px 12px;
             color: white;
@@ -67,29 +64,27 @@
         }
 
         .btn-pay {
-            background-color: #28a745; /* Verde para pagar */
+            background-color: #28a745;
         }
         .btn-pay:hover {
             background-color: #218838;
         }
 
         .btn-cancel {
-            background-color: #dc3545; /* Vermelho para cancelar */
+            background-color: #dc3545;
         }
         .btn-cancel:hover {
             background-color: #c82333;
         }
         
-        /* Mensagens de estado */
         .status-message {
             font-style: italic;
             color: #555;
             margin-top: 2rem;
         }
 
-        /* Estilo para o Modal */
         .modal {
-            display: none; /* Oculto por padrão */
+            display: none;
             position: fixed;
             z-index: 1000;
             left: 0;
@@ -97,13 +92,13 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.5); /* Fundo escuro semitransparente */
+            background-color: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
         }
 
         .modal.active {
-            display: flex; /* Exibido com flexbox para centralizar */
+            display: flex;
         }
 
         .modal-content {
@@ -139,14 +134,15 @@
              <table id="orders-table" style="display: none;">
                 <thead>
                     <tr>
-                        <th>Produto (ID)</th>
+                        <th>Produto</th>
+                        <th>Preço</th>
                         <th>Quantidade</th>
-                        <th>Status</th>
+                        <th>Preço Total</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="orders-body">
-                    </tbody>
+                </tbody>
             </table>
         </div>
     </div>
@@ -162,23 +158,26 @@
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem("token");
 
-            // Se não houver token, redireciona para a página de login
             if (!token) {
                 alert("Você precisa estar logado para ver seus pedidos.");
                 window.location.href = "/login";
                 return;
             }
             
-            const table = document.getElementById('orders-table');
             const tableBody = document.getElementById('orders-body');
             const loadingMessage = document.getElementById('loading-message');
+            const table = document.getElementById('orders-table');
             const modal = document.getElementById('confirmation-modal');
             const modalText = document.getElementById('modal-text');
             const closeModalButton = document.querySelector('.close-button');
 
+            const formatCurrency = (value) => {
+                return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            };
+
             const fetchOrders = async () => {
                 try {
-                    const response = await fetch(`api/v1/order`, {
+                    const response = await fetch(`/api/v1/order`, {
                         headers: { "Authorization": "Bearer " + token }
                     });
 
@@ -196,11 +195,12 @@
             };
 
             const renderOrders = (orders) => {
-                tableBody.innerHTML = ''; // Limpa a tabela antes de renderizar
+                tableBody.innerHTML = '';
 
                 if (orders.length === 0) {
                     loadingMessage.textContent = "Seu carrinho está vazio.";
                     table.style.display = 'none';
+                    loadingMessage.style.display = 'block';
                 } else {
                     loadingMessage.style.display = 'none';
                     table.style.display = 'table';
@@ -208,39 +208,37 @@
                     orders.forEach(order => {
                         const row = document.createElement('tr');
                         
-                        // Célula do Produto
                         const cellProduct = document.createElement('td');
-                        cellProduct.textContent = order.productId;
+                        cellProduct.textContent = order.productName;
                         row.appendChild(cellProduct);
 
-                        // Célula da Quantidade
+                        const cellPrice = document.createElement('td');
+                        cellPrice.textContent = formatCurrency(order.price);
+                        row.appendChild(cellPrice);
+
                         const cellQuant = document.createElement('td');
                         cellQuant.textContent = order.quant;
                         row.appendChild(cellQuant);
 
-                        // Célula do Status
-                        const cellStatus = document.createElement('td');
-                        cellStatus.textContent = order.status.replace('_', ' ');
-                        row.appendChild(cellStatus);
+                        const cellTotalPrice = document.createElement('td');
+                        cellTotalPrice.textContent = formatCurrency(order.price*order.quant);
+                        row.appendChild(cellTotalPrice);
 
-                        // Célula das Ações
                         const cellActions = document.createElement('td');
                         if (order.status === 'AGUARDANDO_PAGAMENTO') {
-                            // Botão Pagar
                             const payButton = document.createElement('button');
                             payButton.textContent = 'Pagar Agora';
                             payButton.className = 'action-button btn-pay';
-                            payButton.dataset.orderId = order.id; // Armazena o ID do pedido no botão
+                            payButton.dataset.orderId = order.id;
                             cellActions.appendChild(payButton);
                             
-                            // Botão Cancelar
                             const cancelButton = document.createElement('button');
                             cancelButton.textContent = 'Cancelar Pedido';
                             cancelButton.className = 'action-button btn-cancel';
                             cancelButton.dataset.orderId = order.id;
                             cellActions.appendChild(cancelButton);
                         } else {
-                            cellActions.textContent = '—'; // Sem ações para outros status
+                            cellActions.textContent = '—';
                         }
                         row.appendChild(cellActions);
 
@@ -251,7 +249,7 @@
 
             const updateOrderStatus = async (orderId, newStatus) => {
                 try {
-                    const response = await fetch(`api/v1/order/update`, {
+                    const response = await fetch(`/api/v1/order/update`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -261,13 +259,13 @@
                     });
                     
                     if (!response.ok) {
-                         const errorData = await response.json();
-                         throw new Error(errorData.message || 'Não foi possível atualizar o pedido.');
+                       const errorData = await response.json();
+                       throw new Error(errorData.message || 'Não foi possível atualizar o pedido.');
                     }
                     
                     const message = newStatus === 'PAGO' ? 'Pagamento confirmado com sucesso!' : 'Pedido cancelado com sucesso!';
                     showModal(message);
-                    fetchOrders(); // Atualiza a lista após a ação
+                    fetchOrders();
                     
                 } catch (error) {
                     alert(`Erro: ${error.message}`);
@@ -275,18 +273,15 @@
                 }
             };
             
-            // Função para exibir o modal
             const showModal = (message) => {
                 modalText.textContent = message;
                 modal.classList.add('active');
             };
             
-            // Função para fechar o modal
             const hideModal = () => {
                 modal.classList.remove('active');
             };
 
-            // Adiciona um único 'event listener' na tabela para gerenciar cliques nos botões
             tableBody.addEventListener('click', (e) => {
                 const target = e.target;
                 const orderId = target.dataset.orderId;
@@ -294,25 +289,23 @@
                 if (!orderId) return;
 
                 if (target.classList.contains('btn-pay')) {
-                    if (confirm(`Deseja confirmar o pagamento para o pedido do produto ${orderId}?`)) {
+                    if (confirm(`Deseja confirmar o pagamento para o pedido ${orderId}?`)) {
                         updateOrderStatus(parseInt(orderId), 'PAGO');
                     }
                 } else if (target.classList.contains('btn-cancel')) {
-                     if (confirm(`Tem certeza que deseja cancelar o pedido do produto ${orderId}?`)) {
+                     if (confirm(`Tem certeza que deseja cancelar o pedido ${orderId}?`)) {
                         updateOrderStatus(parseInt(orderId), 'CANCELADO');
                     }
                 }
             });
 
-            // Event listeners para fechar o modal
             closeModalButton.addEventListener('click', hideModal);
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) { // Fecha se clicar fora do conteúdo
+                if (e.target === modal) {
                     hideModal();
                 }
             });
 
-            // Inicia o processo buscando os pedidos
             fetchOrders();
         });
     </script>

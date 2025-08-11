@@ -1,5 +1,6 @@
 package com.dunnas.lucas.supplier_orders_api.domain.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.OrderResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.OrderMapper;
 import com.dunnas.lucas.supplier_orders_api.domain.enums.OrderStatus;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.OrderEntity;
+import com.dunnas.lucas.supplier_orders_api.infra.entity.ProductEntity;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.UserEntity;
 import com.dunnas.lucas.supplier_orders_api.infra.repository.OrderRepository;
 import com.dunnas.lucas.supplier_orders_api.infra.repository.UserRepository;
@@ -21,8 +24,10 @@ public class OrderService {
     OrderRepository orderRepo;
     @Autowired
     UserRepository userRepo;
+    @Autowired
+    ProductService productServ;
 
-    public List<OrderDTO> getAll() {
+    public List<OrderResponseDTO> getAll() {
         try {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             
@@ -31,12 +36,17 @@ public class OrderService {
 
             List<OrderEntity> orders = orderRepo.findAllByUserId(user.getId());
             
-            List<OrderDTO> dtos = orders.stream()
-                    .filter(o -> OrderStatus.AGUARDANDO_PAGAMENTO.equals(o.getStatus()))
-                    .map(OrderMapper::toDto)
-                    .toList();
-            
+            List<OrderResponseDTO> dtos = orders.stream()
+                .filter(o -> OrderStatus.AGUARDANDO_PAGAMENTO.equals(o.getStatus()))
+                .map(o -> {
+                    ProductEntity product = productServ.getProduct(o.getProductId());
+                    return OrderMapper.toDto(o, product.getName(), product.getPrice());
+                })
+                .toList();
+
             return dtos;
+
+
         } catch (Exception e) {
             System.err.println("OrderService.getAll() - Erro: " + e.getMessage());
             e.printStackTrace();
