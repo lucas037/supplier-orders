@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/login", "/register", "/products", "/buy-products").permitAll()
+                    .requestMatchers("/login", "/register", "/products", "/buy-products", "/cart").permitAll()
                     .requestMatchers("/WEB-INF/**").permitAll()
                     .requestMatchers("/static/**").permitAll()
                     .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()

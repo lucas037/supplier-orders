@@ -19,8 +19,9 @@ public class OrderController {
     @Autowired
     OrderService orderServ;
 
-    @GetMapping()
+    @RequestMapping()
     public ResponseEntity<List<OrderDTO>> getAll() {
+        System.out.println("Iniciando pesquisa...");
         try {
             List<OrderDTO> dtos = orderServ.getAll();
             return ResponseEntity.ok().body(dtos);

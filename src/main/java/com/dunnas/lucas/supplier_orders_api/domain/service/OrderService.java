@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.OrderDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.OrderMapper;
+import com.dunnas.lucas.supplier_orders_api.domain.enums.OrderStatus;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.OrderEntity;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.UserEntity;
 import com.dunnas.lucas.supplier_orders_api.infra.repository.OrderRepository;
@@ -31,6 +32,7 @@ public class OrderService {
             List<OrderEntity> orders = orderRepo.findAllByUserId(user.getId());
             
             List<OrderDTO> dtos = orders.stream()
+                    .filter(o -> OrderStatus.AGUARDANDO_PAGAMENTO.equals(o.getStatus()))
                     .map(OrderMapper::toDto)
                     .toList();
             
