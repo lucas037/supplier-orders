@@ -2,6 +2,7 @@ package com.dunnas.lucas.supplier_orders_api.domain.service;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.ProductResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.application.mapper.ProductMapper;
 import com.dunnas.lucas.supplier_orders_api.controller.exception.ItemNotFoundException;
 import com.dunnas.lucas.supplier_orders_api.infra.entity.ProductEntity;
@@ -23,10 +24,21 @@ public class ProductService {
     @Autowired
     UserRepository userRepo;
     
-    public List<ProductDTO> getAll() {
+    public List<ProductResponseDTO> getAll() {
         return prodRepo.findAll()
             .stream()
-            .map(ProductMapper::toDto)
+            .map(p -> {
+                UserEntity supplier = userRepo.findById(p.getSupplierId())
+                    .orElseThrow(() -> new ItemNotFoundException("Fornecedor não existe."));
+                return new ProductResponseDTO(
+                    p.getId(),
+                    p.getSupplierId(),
+                    supplier.getName(),
+                    p.getName(),
+                    p.getDescription(),
+                    p.getPrice()
+                );
+            })
             .toList();
     }
 

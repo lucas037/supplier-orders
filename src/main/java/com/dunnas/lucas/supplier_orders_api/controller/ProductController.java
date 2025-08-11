@@ -2,6 +2,7 @@ package com.dunnas.lucas.supplier_orders_api.controller;
 
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductCreateDTO;
 import com.dunnas.lucas.supplier_orders_api.application.dto.ProductDTO;
+import com.dunnas.lucas.supplier_orders_api.application.dto.ProductResponseDTO;
 import com.dunnas.lucas.supplier_orders_api.domain.service.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,8 @@ public class ProductController {
     ProductService prodServ;
 
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAll() {
-        List<ProductDTO> listProd = prodServ.getAll();
+    public ResponseEntity<List<ProductResponseDTO>> getAll() {
+        List<ProductResponseDTO> listProd = prodServ.getAll();
         return ResponseEntity.ok(listProd);
     }
 
