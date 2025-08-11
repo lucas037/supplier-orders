@@ -55,18 +55,12 @@ spring.datasource.password=SUA_SENHA_AQUI
 
 ### 1. Clonar o Repositório
 ```bash
-git clone [URL_DO_REPOSITORIO]
+git clone https://github.com/lucas037/supplier-orders.git
 cd supplier-orders-api
 ```
 
-### 2. Executar o Projeto
-```bash
-# Usando Maven
-mvn spring-boot:run
-
-# Ou usando o wrapper do Maven
-./mvnw spring-boot:run
-```
+## 2. Executando o Projeto
+- Abra o projeto na sua IDE (IntelliJ, Eclipse, VS Code, etc.), localize o arquivo `src/main/java/com/seu_pacote/SupplierOrdersApiApplication.java`, clique com o botão direito nele e selecione **"Run"**.
 
 ### 3. Acessar a Aplicação
 - **Login**: http://localhost:8080/login
