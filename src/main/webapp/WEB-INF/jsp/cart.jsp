@@ -145,6 +145,8 @@
         <div class="header-actions">
             <button class="btn logout" onclick="logout()">Sair</button>
             <a href="/buy-products" class="btn products-btn">Produtos</a>
+            <a href="/deposit" class="btn products-btn">Depósito</a>
+            <a href="/transaction-history" class="btn products-btn">Histórico</a>
         </div>
         <h2>Meu Carrinho de Pedidos</h2>
         <div id="orders-content">
@@ -154,8 +156,8 @@
                     <tr>
                         <th>Produto</th>
                         <th>Preço</th>
-                        <th>Preço com Desconto</th>
-                        <th>Quantidade</th>
+                        <th>Preço (Desc.)</th>
+                        <th>Quant.</th>
                         <th>Preço Final</th>
                         <th>Ações</th>
                     </tr>

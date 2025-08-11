@@ -113,7 +113,9 @@
     <div class="container">
         <div class="header-actions">
             <button class="btn logout" onclick="logout()">Sair</button>
-            <a href="/cart" class="btn cart-link-btn">Ver Carrinho</a>
+            <a href="/deposit" class="btn cart-link-btn">Depósito</a>
+            <a href="/cart" class="btn cart-link-btn">Carrinho</a>
+            <a href="/transaction-history" class="btn cart-link-btn">Histórico</a>
         </div>
         <h2>Catálogo de Produtos</h2>
         <div id="products-content">
