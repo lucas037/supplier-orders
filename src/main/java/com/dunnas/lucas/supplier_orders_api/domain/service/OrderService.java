@@ -1,5 +1,7 @@
 package com.dunnas.lucas.supplier_orders_api.domain.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,27 @@ public class OrderService {
     OrderRepository orderRepo;
     @Autowired
     UserRepository userRepo;
+
+    public List<OrderDTO> getAll() {
+        try {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            
+            UserEntity user = userRepo.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+            List<OrderEntity> orders = orderRepo.findAllByUserId(user.getId());
+            
+            List<OrderDTO> dtos = orders.stream()
+                    .map(OrderMapper::toDto)
+                    .toList();
+            
+            return dtos;
+        } catch (Exception e) {
+            System.err.println("OrderService.getAll() - Erro: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
     public OrderDTO create(OrderCreateDTO orderDTO) {
         OrderEntity orderEntity = OrderMapper.toEntity(orderDTO);
