@@ -157,6 +157,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem("token");
+            let orders = []; // Variável global para armazenar as orders
 
             if (!token) {
                 alert("Você precisa estar logado para ver seus pedidos.");
@@ -185,7 +186,7 @@
                         throw new Error("Falha ao buscar os pedidos.");
                     }
 
-                    const orders = await response.json();
+                    orders = await response.json(); // Armazena na variável global
                     renderOrders(orders);
 
                 } catch (error) {
@@ -247,6 +248,27 @@
                 }
             };
 
+            const getClientBalance = async () => {
+                try {
+                    const response = await fetch(`/api/v1/client/balance`, {
+                        method: "GET",
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Não foi possível obter o saldo.');
+                    }
+                    
+                    const data = await response.json();
+                    return data.balance;
+                } catch (error) {
+                    console.error('Erro ao obter saldo:', error);
+                    throw error;
+                }
+            };
+
             const updateOrderStatus = async (orderId, newStatus) => {
                 try {
                     const response = await fetch(`/api/v1/order/update`, {
@@ -277,6 +299,44 @@
                 modalText.textContent = message;
                 modal.classList.add('active');
             };
+
+            const showPaymentModal = async (orderId, orderPrice, orderQuant) => {
+                try {
+                    const currentBalance = await getClientBalance();
+                    const totalPrice = orderPrice * orderQuant;
+                    const finalBalance = currentBalance - totalPrice;
+
+                    const modalContent = 
+                        '<h3>Confirmação de Pagamento</h3>' +
+                        '<div style="text-align: left; margin: 20px 0;">' +
+                            '<p><strong>Saldo Atual:</strong> ' + formatCurrency(currentBalance) + '</p>' +
+                            '<p><strong>Preço Unitário:</strong> ' + formatCurrency(orderPrice) + '</p>' +
+                            '<p><strong>Quantidade:</strong> ' + orderQuant + '</p>' +
+                            '<p><strong>Total a Pagar:</strong> ' + formatCurrency(totalPrice) + '</p>' +
+                            '<p><strong>Saldo Final:</strong> ' + formatCurrency(finalBalance) + '</p>' +
+                        '</div>' +
+                        '<div style="margin-top: 20px;">' +
+                            '<button id="confirmPayment" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 10px; cursor: pointer;">Confirmar Pagamento</button>' +
+                            '<button id="cancelPayment" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Cancelar</button>' +
+                        '</div>';
+
+                    modalText.innerHTML = modalContent;
+                    modal.classList.add('active');
+
+                    // Adicionar event listeners para os botões
+                    document.getElementById('confirmPayment').addEventListener('click', () => {
+                        hideModal();
+                        updateOrderStatus(parseInt(orderId), 'PAGO');
+                    });
+
+                    document.getElementById('cancelPayment').addEventListener('click', () => {
+                        hideModal();
+                    });
+
+                } catch (error) {
+                    alert('Erro ao obter informações de saldo: ' + error.message);
+                }
+            };
             
             const hideModal = () => {
                 modal.classList.remove('active');
@@ -289,8 +349,12 @@
                 if (!orderId) return;
 
                 if (target.classList.contains('btn-pay')) {
-                    if (confirm(`Deseja confirmar o pagamento para o pedido ${orderId}?`)) {
-                        updateOrderStatus(parseInt(orderId), 'PAGO');
+                    // Encontrar a ordem correspondente para obter preço e quantidade
+                    const order = orders.find(o => o.id == orderId);
+                    if (order) {
+                        showPaymentModal(orderId, order.price, order.quant);
+                    } else {
+                        alert('Erro: Não foi possível encontrar os dados do pedido.');
                     }
                 } else if (target.classList.contains('btn-cancel')) {
                      if (confirm(`Tem certeza que deseja cancelar o pedido ${orderId}?`)) {
