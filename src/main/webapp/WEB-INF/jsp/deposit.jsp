@@ -57,10 +57,10 @@
         }
 
         .nav-btn {
-            background-color: #ff9800;
+            background-color: #3498db;
         }
         .nav-btn:hover {
-            background-color: #f57c00;
+            background-color: #2980b9;
         }
 
         .deposit-btn {

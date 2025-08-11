@@ -40,8 +40,8 @@
         .btn { display: inline-block; padding: 8px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; }
         .logout { background-color: crimson; }
         .logout:hover { background-color: darkred; }
-        .products-btn { background-color: #ff9800; }
-        .products-btn:hover { background-color: #f57c00; }
+        .products-btn { background-color: #3498db; }
+        .products-btn:hover { background-color: #2980b9; }
 
         #orders-table {
             width: 100%;
