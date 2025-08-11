@@ -118,6 +118,11 @@
         const clientFields = document.getElementById('clientFields');
         const supplierFields = document.getElementById('supplierFields');
 
+        let firstReqDone = false;
+        let savedUsername = '';
+        let savedId = '';
+        let savedRole = '';
+
         roleSelect.addEventListener('change', () => {
             clientFields.classList.add('hidden');
             supplierFields.classList.add('hidden');
@@ -154,31 +159,40 @@
 
             if (!validateFields(name, username, password, role)) return;
 
-            let body = { name, username, password, role };
-
             try {
-                const res = await fetch('/api/v1/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
+                if (!firstReqDone || savedUsername !== username) {
+                    // Primeira requisição
+                    let body = { name, username, password, role };
 
-                const resData = await res.json();
-                if (!res.ok) {
-                    alert(resData.message || "Erro no registro");
-                    return;
+                    const res = await fetch('/api/v1/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+
+                    const resData = await res.json();
+                    if (!res.ok) {
+                        alert(resData.message || "Erro no registro");
+                        return;
+                    }
+
+                    localStorage.setItem('id', resData.id);
+                    localStorage.setItem('role', resData.role);
+
+                    savedId = resData.id;
+                    savedRole = resData.role;
+                    savedUsername = username;
+                    firstReqDone = true;
                 }
 
-                localStorage.setItem('id', resData.id);
-                localStorage.setItem('role', resData.role);
-
+                // Segunda requisição
                 let secondUrl = '';
                 let secondBody = {};
 
                 if (role === 'CLIENT') {
                     secondUrl = '/api/v1/client/register';
                     secondBody = {
-                        id: resData.id,
+                        id: savedId,
                         balance: 10,
                         birthdate: document.getElementById('birthdate').value,
                         cpf: document.getElementById('cpf').value
@@ -186,7 +200,7 @@
                 } else if (role === 'SUPPLIER') {
                     secondUrl = '/api/v1/supplier/register';
                     secondBody = {
-                        id: resData.id,
+                        id: savedId,
                         cnpj: document.getElementById('cnpj').value
                     };
                 }
