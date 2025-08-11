@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductService {
@@ -28,6 +29,15 @@ public class ProductService {
             .map(ProductMapper::toDto)
             .toList();
     }
+
+    public List<ProductDTO> getAllBySupplierId() {
+        UUID supplierId = getLoggedSupplierId();
+        return prodRepo.findBySupplierId(supplierId)
+                    .stream()
+                    .map(ProductMapper::toDto)
+                    .toList();
+    }
+
 
     public ProductDTO getById(Long id) {
         ProductEntity entity = prodRepo.findById(id)
@@ -67,6 +77,14 @@ public class ProductService {
         prodRepo.save(entity);
 
         return ProductMapper.toDto(entity);
+    }
+
+    private UUID getLoggedSupplierId() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        return user.getId();
     }
 
 }

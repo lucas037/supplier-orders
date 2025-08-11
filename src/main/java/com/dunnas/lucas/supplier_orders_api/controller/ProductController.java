@@ -30,6 +30,13 @@ public class ProductController {
         return ResponseEntity.ok(listProd);
     }
 
+    
+    @GetMapping("/supplier")
+    public ResponseEntity<List<ProductDTO>> getAllBySupplierId() {
+        List<ProductDTO> listProd = prodServ.getAllBySupplierId();
+        return ResponseEntity.ok(listProd);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getById(@PathVariable Long id) {
         ProductDTO prod = prodServ.getById(id);
