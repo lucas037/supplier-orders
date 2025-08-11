@@ -30,7 +30,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Ignorar filtro para rotas públicas
         String requestURI = request.getRequestURI();
-        if (requestURI.equals("/welcome") || 
+        if (requestURI.equals("/login") || 
             requestURI.startsWith("/api/v1/auth/") ||
             requestURI.startsWith("/WEB-INF/") ||
             requestURI.startsWith("/static/") ||
