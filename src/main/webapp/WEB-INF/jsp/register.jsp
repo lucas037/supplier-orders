@@ -12,7 +12,7 @@
             height: 100vh;
             margin: 0;
         }
-        .register-container {
+        .login-container {
             background-color: white;
             padding: 2rem;
             border-radius: 12px;
@@ -20,28 +20,21 @@
             width: 320px;
             text-align: center;
         }
-        .register-container h2 {
+        .login-container h2 {
             margin-bottom: 1.5rem;
             color: #333;
         }
-        .register-container label {
-            display: block;
-            text-align: left;
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 14px;
-            color: #333;
-        }
-        .register-container input, 
-        .register-container select {
+        .login-container input,
+        .login-container select {
             width: 100%;
             padding: 10px;
             margin: 0.5rem 0;
             border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 14px;
+            box-sizing: border-box;
         }
-        .register-container button {
+        .login-container button {
             width: 100%;
             padding: 10px;
             background-color: #3a7bd5;
@@ -51,16 +44,16 @@
             font-size: 14px;
             cursor: pointer;
             transition: 0.3s;
-            margin-top: 0.5rem;
+            margin-top: 1rem;
         }
-        .register-container button:hover {
+        .login-container button:hover {
             background-color: #305d9b;
         }
-        .hidden {
-            display: none;
+        .login-container button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
-        
-        .login-link {
+        .register-link {
             display: block;
             margin-top: 1rem;
             font-size: 13px;
@@ -68,55 +61,49 @@
             text-decoration: none;
             transition: 0.2s;
         }
-        .login-link:hover {
+        .register-link:hover {
             color: #3a7bd5;
             text-decoration: underline;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="register-container">
-        <h2>Registrar</h2>
+    <div class="login-container">
+        <h2>Criar Conta</h2>
+        <form id="registerForm">
+            <input type="text" id="name" name="name" placeholder="Nome" required>
+            <input type="text" id="username" name="username" placeholder="Usuário" required>
+            <input type="password" id="password" name="password" placeholder="Senha (mín. 6 caracteres)" required>
+            
+            <select id="role" name="role" required>
+                <option value="" disabled selected>Selecione seu perfil</option>
+                <option value="CLIENT">Cliente</option>
+                <option value="SUPPLIER">Fornecedor</option>
+            </select>
 
-        <label>Nome</label>
-        <input type="text" id="name">
+            <div id="clientFields" class="hidden">
+                <input type="date" id="birthdate" name="birthdate" placeholder="Data de Nascimento">
+                <input type="text" id="cpf" name="cpf" placeholder="CPF (11 dígitos)">
+            </div>
 
-        <label>Username</label>
-        <input type="text" id="username">
+            <div id="supplierFields" class="hidden">
+                <input type="text" id="cnpj" name="cnpj" placeholder="CNPJ (14 dígitos)">
+            </div>
 
-        <label>Password</label>
-        <input type="password" id="password">
-
-        <label>Role</label>
-        <select id="role">
-            <option value="">Selecione...</option>
-            <option value="CLIENT">CLIENT</option>
-            <option value="SUPPLIER">SUPPLIER</option>
-        </select>
-
-        <div id="clientFields" class="hidden">
-            <label>Birthdate</label>
-            <input type="date" id="birthdate">
-
-            <label>CPF</label>
-            <input type="text" id="cpf">
-        </div>
-
-        <div id="supplierFields" class="hidden">
-            <label>CNPJ</label>
-            <input type="text" id="cnpj">
-        </div>
-
-        <button onclick="register()">Registrar</button>
-        
-        <a class="login-link" href="/login">Possui conta? Login</a>
-
+            <button type="submit" id="registerButton">Registrar</button>
+        </form>
+        <a class="register-link" href="/login">Já tem uma conta? Entre aqui</a>
     </div>
 
     <script>
         const roleSelect = document.getElementById('role');
         const clientFields = document.getElementById('clientFields');
         const supplierFields = document.getElementById('supplierFields');
+        const registerForm = document.getElementById('registerForm');
+        const registerButton = document.getElementById('registerButton');
 
         let firstReqDone = false;
         let savedUsername = '';
@@ -124,85 +111,79 @@
         let savedRole = '';
 
         roleSelect.addEventListener('change', () => {
-            clientFields.classList.add('hidden');
-            supplierFields.classList.add('hidden');
-            if (roleSelect.value === 'CLIENT') {
-                clientFields.classList.remove('hidden');
-            } else if (roleSelect.value === 'SUPPLIER') {
-                supplierFields.classList.remove('hidden');
-            }
+            const role = roleSelect.value;
+            clientFields.classList.toggle('hidden', role !== 'CLIENT');
+            supplierFields.classList.toggle('hidden', role !== 'SUPPLIER');
+            
+            document.getElementById('birthdate').required = (role === 'CLIENT');
+            document.getElementById('cpf').required = (role === 'CLIENT');
+            document.getElementById('cnpj').required = (role === 'SUPPLIER');
         });
 
-        function validateFields(name, username, password, role) {
-            if (!name.trim()) { alert("O nome é obrigatório."); return false; }
-            if (!username.trim()) { alert("O username é obrigatório."); return false; }
-            if (!password.trim() || password.length < 6) { alert("A senha deve ter pelo menos 6 caracteres."); return false; }
-            if (!role) { alert("Selecione um papel (role)."); return false; }
-            if (role === 'CLIENT') {
-                const birthdate = document.getElementById('birthdate').value;
-                const cpf = document.getElementById('cpf').value;
-                if (!birthdate) { alert("A data de nascimento é obrigatória para clientes."); return false; }
-                if (!cpf.trim() || cpf.length !== 11) { alert("O CPF deve conter 11 dígitos."); return false; }
+        function validateFields(data) {
+            if (data.password.length < 6) {
+                alert("A senha deve ter pelo menos 6 caracteres.");
+                return false;
             }
-            if (role === 'SUPPLIER') {
-                const cnpj = document.getElementById('cnpj').value;
-                if (!cnpj.trim() || cnpj.length !== 14) { alert("O CNPJ deve conter 14 dígitos."); return false; }
+            if (data.role === 'CLIENT' && data.cpf.length !== 11) {
+                alert("O CPF deve conter exatamente 11 dígitos.");
+                return false;
+            }
+            if (data.role === 'SUPPLIER' && data.cnpj.length !== 14) {
+                alert("O CNPJ deve conter exatamente 14 dígitos.");
+                return false;
             }
             return true;
         }
 
-        async function register() {
-            const name = document.getElementById('name').value;
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const role = roleSelect.value;
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            registerButton.disabled = true;
 
-            if (!validateFields(name, username, password, role)) return;
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            if (!validateFields(data)) {
+                registerButton.disabled = false;
+                return;
+            }
 
             try {
-                if (!firstReqDone || savedUsername !== username) {
-                    // Primeira requisição
-                    let body = { name, username, password, role };
-
+                if (!firstReqDone || savedUsername !== data.username) {
+                    const firstRequestBody = {
+                        name: data.name,
+                        username: data.username,
+                        password: data.password,
+                        role: data.role
+                    };
+                    
                     const res = await fetch('/api/v1/auth/register', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(body)
+                        body: JSON.stringify(firstRequestBody)
                     });
 
                     const resData = await res.json();
                     if (!res.ok) {
-                        alert(resData.message || "Erro no registro");
-                        return;
+                        alert(resData.message || "Erro no registro. Verifique se o usuário já existe.");
+                        throw new Error("Falha na primeira requisição");
                     }
-
-                    localStorage.setItem('id', resData.id);
-                    localStorage.setItem('role', resData.role);
-
+                    
                     savedId = resData.id;
                     savedRole = resData.role;
-                    savedUsername = username;
+                    savedUsername = data.username;
                     firstReqDone = true;
                 }
 
-                // Segunda requisição
                 let secondUrl = '';
                 let secondBody = {};
 
-                if (role === 'CLIENT') {
+                if (savedRole === 'CLIENT') {
                     secondUrl = '/api/v1/client/register';
-                    secondBody = {
-                        id: savedId,
-                        balance: 10,
-                        birthdate: document.getElementById('birthdate').value,
-                        cpf: document.getElementById('cpf').value
-                    };
-                } else if (role === 'SUPPLIER') {
+                    secondBody = { id: savedId, balance: 10, birthdate: data.birthdate, cpf: data.cpf };
+                } else if (savedRole === 'SUPPLIER') {
                     secondUrl = '/api/v1/supplier/register';
-                    secondBody = {
-                        id: savedId,
-                        cnpj: document.getElementById('cnpj').value
-                    };
+                    secondBody = { id: savedId, cnpj: data.cnpj };
                 }
 
                 const secondRes = await fetch(secondUrl, {
@@ -211,18 +192,23 @@
                     body: JSON.stringify(secondBody)
                 });
 
-                const secondData = await secondRes.json();
                 if (!secondRes.ok) {
-                    alert(secondData.message || "Erro no registro de " + role.toLowerCase());
-                    return;
+                    const secondData = await secondRes.json();
+                    alert(secondData.message || `Erro ao registrar detalhes de ${savedRole.toLowerCase()}.`);
+                    throw new Error("Falha na segunda requisição");
                 }
 
                 window.location.href = '/login';
 
             } catch (err) {
-                alert("Erro de conexão: " + err);
+                console.error("Erro no processo de registro:", err);
+                if (!err.message.includes("Falha")) {
+                    alert("Ocorreu um erro inesperado. Tente novamente.");
+                }
+            } finally {
+                registerButton.disabled = false;
             }
-        }
+        });
     </script>
 </body>
 </html>
